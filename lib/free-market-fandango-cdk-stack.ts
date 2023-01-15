@@ -29,7 +29,7 @@ export class FreeMarketFandangoCdkStack extends Stack {
     const flaskHandler = new Function(this, 'FlaskHandler', {
       runtime: Runtime.PYTHON_3_9,
       handler: 'handler.lambda_handler',
-      code: Code.fromAsset( path.join(__dirname, '../lambda/lambda.zip') ),
+      code: Code.fromAsset( path.join(__dirname, '../lambda.zip') ),
     });
 
     new LambdaRestApi(this, 'FlaskApi', {
