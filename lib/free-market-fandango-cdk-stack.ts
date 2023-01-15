@@ -7,7 +7,7 @@ import {Certificate} from "aws-cdk-lib/aws-certificatemanager";
 import {Constants} from "./constants";
 import {Code, Function, Runtime} from "aws-cdk-lib/aws-lambda";
 import {LambdaRestApi} from "aws-cdk-lib/aws-apigateway";
-import {Vpc} from "aws-cdk-lib/aws-ec2";
+import {SubnetType, Vpc} from "aws-cdk-lib/aws-ec2";
 import {Effect, ManagedPolicy, PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
 
 export class FreeMarketFandangoCdkStack extends Stack {
@@ -23,16 +23,19 @@ export class FreeMarketFandangoCdkStack extends Stack {
       }
     });
 
-    new BucketDeployment(this, 'FrontendBucketDeployment', {
-      sources: [ Source.asset( path.join(__dirname, '../frontend') ) ],
-      destinationBucket: cloudFrontToS3.s3BucketInterface,
-    });
+    // new BucketDeployment(this, 'FrontendBucketDeployment', {
+    //   sources: [ Source.asset( path.join(__dirname, '../frontend') ) ],
+    //   destinationBucket: cloudFrontToS3.s3BucketInterface,
+    // });
 
-    const vpc = Vpc.fromVpcAttributes(this, 'DefaultVpc', {
-      vpcId: Constants.lambdaVpcId,
-      availabilityZones: Fn.getAzs(),
-      vpcCidrBlock: Constants.lambdaVpcSubnet
-    })
+    const rdsVpc = new Vpc(this, 'PrivateVpc', {
+        natGateways: 0,
+        subnetConfiguration: [{
+            cidrMask: 28,
+            name: 'rds',
+            subnetType: SubnetType.PRIVATE_ISOLATED
+        }]
+    });
 
     const lambdaRole = new Role(this, 'LambdaRole', {
       assumedBy: new ServicePrincipal('lambda.amazonaws.com')
@@ -68,7 +71,7 @@ export class FreeMarketFandangoCdkStack extends Stack {
         DATABASE_PASS: process.env.DATABASE_PASS || '',
         DATABASE_NAME: process.env.DATABASE_NAME || ''
       },
-      vpc: vpc,
+      vpc: rdsVpc,
       role: lambdaRole
     });
 
