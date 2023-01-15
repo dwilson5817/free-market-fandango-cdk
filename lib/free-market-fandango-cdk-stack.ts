@@ -3,12 +3,21 @@ import { Construct } from 'constructs';
 import { BucketDeployment, Source } from "aws-cdk-lib/aws-s3-deployment";
 import * as path from "path";
 import { CloudFrontToS3 } from "@aws-solutions-constructs/aws-cloudfront-s3";
+import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
+import { Constants } from "./constants";
 
 export class FreeMarketFandangoCdkStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const cloudFrontToS3 = new CloudFrontToS3(this, 'CloudFrontToS3', {})
+    const certificate = Certificate.fromCertificateArn(this, 'Certificate', Constants.certificateArn);
+
+    const cloudFrontToS3 = new CloudFrontToS3(this, 'CloudFrontToS3', {
+      cloudFrontDistributionProps: {
+        certificate: certificate,
+        domainNames: [ Constants.domainName ],
+      }
+    });
 
     new BucketDeployment(this, 'FrontendBucketDeployment', {
       sources: [ Source.asset( path.join(__dirname, '../frontend') ) ],
