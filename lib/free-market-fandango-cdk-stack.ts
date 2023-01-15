@@ -1,19 +1,18 @@
-import { Duration, Stack, StackProps } from 'aws-cdk-lib';
-import * as sns from 'aws-cdk-lib/aws-sns';
-import * as subs from 'aws-cdk-lib/aws-sns-subscriptions';
-import * as sqs from 'aws-cdk-lib/aws-sqs';
+import { Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import { BucketDeployment, Source } from "aws-cdk-lib/aws-s3-deployment";
+import * as path from "path";
+import { CloudFrontToS3 } from "@aws-solutions-constructs/aws-cloudfront-s3";
 
 export class FreeMarketFandangoCdkStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const queue = new sqs.Queue(this, 'FreeMarketFandangoCdkQueue', {
-      visibilityTimeout: Duration.seconds(300)
+    const cloudFrontToS3 = new CloudFrontToS3(this, 'CloudFrontToS3', {})
+
+    new BucketDeployment(this, 'FrontendBucketDeployment', {
+      sources: [ Source.asset( path.join(__dirname, '../frontend') ) ],
+      destinationBucket: cloudFrontToS3.s3BucketInterface,
     });
-
-    const topic = new sns.Topic(this, 'FreeMarketFandangoCdkTopic');
-
-    topic.addSubscription(new subs.SqsSubscription(queue));
   }
 }
