@@ -1,4 +1,4 @@
-import { Stack, StackProps} from 'aws-cdk-lib';
+import {Duration, Stack, StackProps} from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { BucketDeployment, Source } from "aws-cdk-lib/aws-s3-deployment";
 import * as path from "path";
@@ -17,7 +17,7 @@ export class FreeMarketFandangoCdkStack extends Stack {
     const cloudFrontToS3 = new CloudFrontToS3(this, 'CloudFrontToS3', {
       cloudFrontDistributionProps: {
         certificate: certificate,
-        domainNames: [ Constants.domainName ],
+        domainNames: [ Constants.frontendDomainName ],
       }
     });
 
@@ -30,10 +30,15 @@ export class FreeMarketFandangoCdkStack extends Stack {
       runtime: Runtime.PYTHON_3_9,
       handler: 'handler.lambda_handler',
       code: Code.fromAsset( path.join(__dirname, '../lambda.zip') ),
+      timeout: Duration.seconds(15)
     });
 
     new LambdaRestApi(this, 'FlaskApi', {
-      handler: flaskHandler
+      handler: flaskHandler,
+      domainName: {
+        domainName: Constants.apiDomainName,
+        certificate: certificate,
+      },
     });
   }
 }
