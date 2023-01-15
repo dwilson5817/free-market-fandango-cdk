@@ -12,8 +12,9 @@ cdk-deploy:
   script:
     - apk --no-cache add curl zip
     - 'curl --location --output frontend.zip "$FRONTEND_DOWNLOAD_URL"'
-    - 'curl --location --output lambda.zip "$LAMBDA_DOWNLOAD_URL"'
-    - unzip frontend.zip lambda.zip
+    - unzip frontend.zip
+    - 'curl --location --output api.zip "$LAMBDA_DOWNLOAD_URL"'
+    - unzip api.zip
     - mv dist/ frontend
     - npm install --progress=false
     - npm run build
