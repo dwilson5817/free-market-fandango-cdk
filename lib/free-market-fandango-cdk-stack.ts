@@ -30,7 +30,14 @@ export class FreeMarketFandangoCdkStack extends Stack {
       runtime: Runtime.PYTHON_3_9,
       handler: 'handler.lambda_handler',
       code: Code.fromAsset( path.join(__dirname, '../lambda.zip') ),
-      timeout: Duration.seconds(15)
+      timeout: Duration.seconds(15),
+      environment: {
+        DATABASE_HOST: process.env.DATABASE_HOST || '',
+        DATABASE_PORT: process.env.DATABASE_PORT || '',
+        DATABASE_USER: process.env.DATABASE_USER || '',
+        DATABASE_PASS: process.env.DATABASE_PASS || '',
+        DATABASE_NAME: process.env.DATABASE_NAME || ''
+      }
     });
 
     new LambdaRestApi(this, 'FlaskApi', {
