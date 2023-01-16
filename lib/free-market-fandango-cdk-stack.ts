@@ -7,6 +7,7 @@ import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import { Constants } from "./constants";
 import { Function, Code, Runtime} from "aws-cdk-lib/aws-lambda";
 import { LambdaRestApi } from "aws-cdk-lib/aws-apigateway";
+import {ResponseHeadersPolicy} from "aws-cdk-lib/aws-cloudfront";
 
 export class FreeMarketFandangoCdkStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -19,6 +20,7 @@ export class FreeMarketFandangoCdkStack extends Stack {
         certificate: certificate,
         domainNames: [ Constants.frontendDomainName ],
       },
+      insertHttpSecurityHeaders: false,
       responseHeadersPolicyProps: {
         securityHeadersBehavior: {
           contentSecurityPolicy: {
