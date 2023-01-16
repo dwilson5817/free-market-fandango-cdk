@@ -18,6 +18,14 @@ export class FreeMarketFandangoCdkStack extends Stack {
       cloudFrontDistributionProps: {
         certificate: certificate,
         domainNames: [ Constants.frontendDomainName ],
+      },
+      responseHeadersPolicyProps: {
+        securityHeadersBehavior: {
+          contentSecurityPolicy: {
+            contentSecurityPolicy: `default-src 'none'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://cdn.jsdelivr.net; img-src 'self'; font-src 'self' https://cdn.jsdelivr.net; connect-src https://${Constants.apiDomainName}`,
+            override: true
+          }
+        },
       }
     });
 
