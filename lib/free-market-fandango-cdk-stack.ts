@@ -54,7 +54,7 @@ export class FreeMarketFandangoCdkStack extends Stack {
       destinationBucket: cloudFrontToS3.s3BucketInterface,
     });
 
-    new ApiGatewayToLambda(this, 'ApiGatewayToLambdaPattern', {
+    const apiGatewayToLambda = new ApiGatewayToLambda(this, 'ApiGatewayToLambdaPattern', {
       lambdaFunctionProps: {
         runtime: Runtime.PYTHON_3_9,
         handler: 'handler.lambda_handler',
@@ -71,6 +71,10 @@ export class FreeMarketFandangoCdkStack extends Stack {
       },
       apiGatewayProps: {
         restApiName: this.stackName,
+        defaultCorsPreflightOptions: {
+          allowOrigins: [ `https://${Constants.frontendDomainName}` ],
+          allowMethods: [ 'GET', 'PUT', 'POST' ]
+        },
         domainName: {
           domainName: Constants.apiDomainName,
           certificate: certificate,
