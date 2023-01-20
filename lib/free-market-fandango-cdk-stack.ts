@@ -8,6 +8,7 @@ import { Constants } from "./constants";
 import { Code, Runtime} from "aws-cdk-lib/aws-lambda";
 import { ApiGatewayToLambda } from "@aws-solutions-constructs/aws-apigateway-lambda";
 import { HeadersFrameOption } from "aws-cdk-lib/aws-cloudfront";
+import {AuthorizationType} from "aws-cdk-lib/aws-apigateway";
 
 export class FreeMarketFandangoCdkStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -54,11 +55,12 @@ export class FreeMarketFandangoCdkStack extends Stack {
       destinationBucket: cloudFrontToS3.s3BucketInterface,
     });
 
-    const apiGatewayToLambda = new ApiGatewayToLambda(this, 'ApiGatewayToLambdaPattern', {
+    new ApiGatewayToLambda(this, 'ApiGatewayToLambdaPattern', {
       lambdaFunctionProps: {
         runtime: Runtime.PYTHON_3_9,
         handler: 'handler.lambda_handler',
         code: Code.fromAsset( path.join(__dirname, '../lambda.zip') ),
+        timeout: Duration.seconds(15),
         environment: {
           ADMIN_PASSWORD: process.env.ADMIN_PASSWORD || '',
           DATABASE_HOST: process.env.DATABASE_HOST || '',
@@ -78,6 +80,9 @@ export class FreeMarketFandangoCdkStack extends Stack {
         domainName: {
           domainName: Constants.apiDomainName,
           certificate: certificate,
+        },
+        defaultMethodOptions: {
+          authorizationType: AuthorizationType.NONE
         }
       }
     });
