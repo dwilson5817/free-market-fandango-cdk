@@ -1,4 +1,4 @@
-import { Stack, StackProps } from 'aws-cdk-lib';
+import { Duration, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { BucketDeployment, Source } from "aws-cdk-lib/aws-s3-deployment";
 import * as path from "path";
@@ -7,6 +7,7 @@ import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import { Constants } from "./constants";
 import { Code, Runtime} from "aws-cdk-lib/aws-lambda";
 import { ApiGatewayToLambda } from "@aws-solutions-constructs/aws-apigateway-lambda";
+import { HeadersFrameOption } from "aws-cdk-lib/aws-cloudfront";
 
 export class FreeMarketFandangoCdkStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -14,7 +15,7 @@ export class FreeMarketFandangoCdkStack extends Stack {
 
     const certificate = Certificate.fromCertificateArn(this, 'Certificate', Constants.certificateArn);
 
-    const cloudFrontToS3 = new CloudFrontToS3(this, 'CloudFrontToS3', {
+    const cloudFrontToS3 = new CloudFrontToS3(this, 'CloudFrontToS3Pattern', {
       cloudFrontDistributionProps: {
         certificate: certificate,
         domainNames: [ Constants.frontendDomainName ],
@@ -24,6 +25,24 @@ export class FreeMarketFandangoCdkStack extends Stack {
         securityHeadersBehavior: {
           contentSecurityPolicy: {
             contentSecurityPolicy: `default-src 'none'; script-src 'self' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self'; font-src 'self' https://cdn.jsdelivr.net; connect-src https://${Constants.apiDomainName}`,
+            override: true
+          },
+          contentTypeOptions: {
+            override: true
+          },
+          frameOptions: {
+            frameOption: HeadersFrameOption.DENY,
+            override: true
+          },
+          strictTransportSecurity: {
+            accessControlMaxAge: Duration.days(730),
+            includeSubdomains: true,
+            preload: true,
+            override: true
+          },
+          xssProtection: {
+            protection: true,
+            modeBlock: true,
             override: true
           }
         },
@@ -51,6 +70,7 @@ export class FreeMarketFandangoCdkStack extends Stack {
         },
       },
       apiGatewayProps: {
+        restApiName: this.stackName,
         domainName: {
           domainName: Constants.apiDomainName,
           certificate: certificate,
