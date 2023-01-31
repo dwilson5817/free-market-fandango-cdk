@@ -18,7 +18,6 @@ cdk-deploy:
     - mv dist/ frontend
     - npm install --progress=false
     - npm run build
-    - npm run cdk bootstrap
     - npm run cdk deploy
 
 include:
