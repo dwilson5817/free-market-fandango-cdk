@@ -15,7 +15,7 @@ cdk-deploy:
     - unzip frontend.zip
     - 'curl --location --output api.zip "$LAMBDA_DOWNLOAD_URL"'
     - unzip api.zip
-    - mv dist/ frontend
+    - mv dist frontend
     - npm install --progress=false
     - npm run build
     - npm run cdk deploy

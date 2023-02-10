@@ -25,7 +25,7 @@ export class FreeMarketFandangoCdkStack extends Stack {
       responseHeadersPolicyProps: {
         securityHeadersBehavior: {
           contentSecurityPolicy: {
-            contentSecurityPolicy: `default-src 'none'; script-src 'self' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self'; font-src 'self' https://cdn.jsdelivr.net; connect-src https://${Constants.apiDomainName}`,
+            contentSecurityPolicy: `Content-Security-Policy: default-src 'none'; script-src 'self' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data:image/svg+xml; font-src 'self' https://cdn.jsdelivr.net; connect-src https://${Constants.apiDomainName}`,
             override: true
           },
           contentTypeOptions: {
