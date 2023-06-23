@@ -58,7 +58,7 @@ export class FreeMarketFandangoCdkStack extends Stack {
     new ApiGatewayToLambda(this, 'ApiGatewayToLambdaPattern', {
       lambdaFunctionProps: {
         runtime: Runtime.PYTHON_3_10,
-        handler: 'handler.lambda_handler',
+        handler: 'main.handler',
         code: Code.fromAsset( path.join(__dirname, '../lambda.zip') ),
         timeout: Duration.seconds(15),
         environment: {
