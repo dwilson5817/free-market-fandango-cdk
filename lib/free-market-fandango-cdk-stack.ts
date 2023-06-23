@@ -57,18 +57,17 @@ export class FreeMarketFandangoCdkStack extends Stack {
 
     new ApiGatewayToLambda(this, 'ApiGatewayToLambdaPattern', {
       lambdaFunctionProps: {
-        runtime: Runtime.PYTHON_3_9,
+        runtime: Runtime.PYTHON_3_10,
         handler: 'handler.lambda_handler',
         code: Code.fromAsset( path.join(__dirname, '../lambda.zip') ),
         timeout: Duration.seconds(15),
         environment: {
           ADMIN_PASSWORD: process.env.ADMIN_PASSWORD || '',
-          DATABASE_HOST: process.env.DATABASE_HOST || '',
-          DATABASE_PORT: process.env.DATABASE_PORT || '',
-          DATABASE_USER: process.env.DATABASE_USER || '',
-          DATABASE_PASS: process.env.DATABASE_PASS || '',
-          DATABASE_NAME: process.env.DATABASE_NAME || '',
-          SECRET_KEY: process.env.SECRET_KEY || ''
+          DATABASE_URL: process.env.DATABASE_URL || '',
+          SECRET_KEY: process.env.SECRET_KEY || '',
+          SPOTIPY_CLIENT_ID: process.env.SPOTIPY_CLIENT_ID || '',
+          SPOTIPY_CLIENT_SECRET: process.env.SPOTIPY_CLIENT_SECRET || '',
+          SPOTIPY_REDIRECT_URI: process.env.SPOTIPY_REDIRECT_URI || ''
         },
       },
       apiGatewayProps: {
