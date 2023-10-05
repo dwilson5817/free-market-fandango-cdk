@@ -10,7 +10,7 @@ cdk-deploy:
     GITLAB_OIDC_TOKEN:
       aud: https://gitlab.dylanwilson.dev
   # Use Node 16 on Alpine
-  image: gitlab.dylanwilson.dev:5050/dylan/nodejs-aws-cli:main
+  image: node:18.18.0-alpine
   stage: deploy
   script:
     - >
@@ -23,7 +23,7 @@ cdk-deploy:
       --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]'
       --output text))
     - aws sts get-caller-identity
-    - apk --no-cache add curl zip
+    - apk --no-cache add curl zip aws-cli
     - 'curl --location --output frontend.zip "$FRONTEND_DOWNLOAD_URL"'
     - unzip frontend.zip
     - 'curl --location --output api.zip "$LAMBDA_DOWNLOAD_URL"'
@@ -31,6 +31,7 @@ cdk-deploy:
     - mv dist frontend
     - npm install --progress=false
     - npm run build
+    - npm run cdk bootstrap
     - npm run cdk deploy
 
 include:
