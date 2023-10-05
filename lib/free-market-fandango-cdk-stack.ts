@@ -14,11 +14,12 @@ export class FreeMarketFandangoCdkStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const certificate = Certificate.fromCertificateArn(this, 'Certificate', Constants.certificateArn);
+    const distributionCertificate = Certificate.fromCertificateArn(this, 'Certificate', Constants.distributionCertificateArn);
+    const apiGatewayCertificate = Certificate.fromCertificateArn(this, 'Certificate', Constants.apiGatewayCertificateArn);
 
     const cloudFrontToS3 = new CloudFrontToS3(this, 'CloudFrontToS3Pattern', {
       cloudFrontDistributionProps: {
-        certificate: certificate,
+        certificate: distributionCertificate,
         domainNames: [ Constants.frontendDomainName ],
       },
       insertHttpSecurityHeaders: false,
@@ -78,7 +79,7 @@ export class FreeMarketFandangoCdkStack extends Stack {
         },
         domainName: {
           domainName: Constants.apiDomainName,
-          certificate: certificate,
+          certificate: apiGatewayCertificate,
         },
         defaultMethodOptions: {
           authorizationType: AuthorizationType.NONE
