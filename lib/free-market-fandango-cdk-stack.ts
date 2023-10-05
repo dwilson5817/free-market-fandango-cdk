@@ -14,8 +14,8 @@ export class FreeMarketFandangoCdkStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const distributionCertificate = Certificate.fromCertificateArn(this, 'Certificate', Constants.distributionCertificateArn);
-    const apiGatewayCertificate = Certificate.fromCertificateArn(this, 'Certificate', Constants.apiGatewayCertificateArn);
+    const distributionCertificate = Certificate.fromCertificateArn(this, 'DistributionCertificate', Constants.distributionCertificateArn);
+    const apiGatewayCertificate = Certificate.fromCertificateArn(this, 'ApiGatewayCertificate', Constants.apiGatewayCertificateArn);
 
     const cloudFrontToS3 = new CloudFrontToS3(this, 'CloudFrontToS3Pattern', {
       cloudFrontDistributionProps: {
