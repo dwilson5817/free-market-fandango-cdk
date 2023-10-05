@@ -13,6 +13,7 @@ cdk-deploy:
   image: node:18.18.0-alpine
   stage: deploy
   script:
+    - apk --no-cache add curl zip aws-cli
     - >
       export $(printf "AWS_ACCESS_KEY_ID=%s AWS_SECRET_ACCESS_KEY=%s AWS_SESSION_TOKEN=%s"
       $(aws sts assume-role-with-web-identity
@@ -23,7 +24,6 @@ cdk-deploy:
       --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]'
       --output text))
     - aws sts get-caller-identity
-    - apk --no-cache add curl zip aws-cli
     - 'curl --location --output frontend.zip "$FRONTEND_DOWNLOAD_URL"'
     - unzip frontend.zip
     - 'curl --location --output api.zip "$LAMBDA_DOWNLOAD_URL"'
