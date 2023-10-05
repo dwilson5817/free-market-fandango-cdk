@@ -7,9 +7,19 @@ sast:
 
 cdk-deploy:
   # Use Node 16 on Alpine
-  image: node:16-alpine
+  image: gitlab.dylanwilson.dev:5050/dylan/nodejs-aws-cli:main
   stage: deploy
   script:
+    - >
+      export $(printf "AWS_ACCESS_KEY_ID=%s AWS_SECRET_ACCESS_KEY=%s AWS_SESSION_TOKEN=%s"
+      $(aws sts assume-role-with-web-identity
+      --role-arn ${ROLE_ARN}
+      --role-session-name "GitLabRunner-${CI_PROJECT_ID}-${CI_PIPELINE_ID}"
+      --web-identity-token ${GITLAB_OIDC_TOKEN}
+      --duration-seconds 3600
+      --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]'
+      --output text))
+    - aws sts get-caller-identity
     - apk --no-cache add curl zip
     - 'curl --location --output frontend.zip "$FRONTEND_DOWNLOAD_URL"'
     - unzip frontend.zip
