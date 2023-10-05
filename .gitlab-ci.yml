@@ -31,7 +31,7 @@ cdk-deploy:
     - mv dist frontend
     - npm install --progress=false
     - npm run build
-    - npm run cdk bootstrap
+    - npm run cdk bootstrap aws://805294971713/eu-west-1
     - npm run cdk deploy
 
 include:
