@@ -5,15 +5,14 @@ stages:
 sast:
   stage: test
 
-cdk-deploy:
+Deploy CDK:
   id_tokens:
     GITLAB_OIDC_TOKEN:
       aud: https://gitlab.dylanwilson.dev
-  # Use Node 16 on Alpine
-  image: node:18.18.0-alpine
+  image: gitlab.dylanwilson.dev:5050/dylan/nodejs-aws-cli:main
   stage: deploy
   script:
-    - apk --no-cache add curl zip aws-cli
+    - apk --no-cache add curl zip
     - export AWS_DEFAULT_REGION=eu-west-1
     - >
       export $(printf "AWS_ACCESS_KEY_ID=%s AWS_SECRET_ACCESS_KEY=%s AWS_SESSION_TOKEN=%s"
