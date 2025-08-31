@@ -1,13 +1,13 @@
 // import * as cdk from 'aws-cdk-lib';
 // import { Template } from 'aws-cdk-lib/assertions';
-// import * as FreeMarketFandangoApi from '../lib/free-market-fandango-api-stack';
+// import * as FreeMarketFandangoCdk from '../lib/free-market-fandango-cdk-stack';
 
 // example test. To run these tests, uncomment this file along with the
-// example resource in lib/free-market-fandango-api-stack.ts
+// example resource in lib/free-market-fandango-cdk-stack.ts
 test('SQS Queue Created', () => {
 //   const app = new cdk.App();
 //     // WHEN
-//   const stack = new FreeMarketFandangoApi.FreeMarketFandangoApiStack(app, 'MyTestStack');
+//   const stack = new FreeMarketFandangoCdk.FreeMarketFandangoCdkStack(app, 'MyTestStack');
 //     // THEN
 //   const template = Template.fromStack(stack);
 

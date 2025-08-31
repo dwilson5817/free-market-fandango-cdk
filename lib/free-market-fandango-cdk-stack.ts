@@ -5,7 +5,7 @@ import { CronConstruct } from "./constructs/cron-construct";
 import { ApiConstruct } from "./constructs/api-construct";
 import { EventQueueConstruct } from "./constructs/event-queue-construct";
 
-export class FreeMarketFandangoApiStack extends cdk.Stack {
+export class FreeMarketFandangoCdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
