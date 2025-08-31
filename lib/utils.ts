@@ -14,16 +14,23 @@ export const buildAllowedOrigins = () => {
 }
 
 export const buildLambdaProps = (packageName: string, environment: { [ k: string ]: string }) => ({
-  runtime: lambda.Runtime.PYTHON_3_10,
-  handler: `${packageName}.main.handler`,
-  code: lambda.Code.fromAsset( path.join(__dirname, `../${packageName}`), {
-    bundling: {
-      image: lambda.Runtime.PYTHON_3_10.bundlingImage,
-      command: [
-        'bash', '-c', 'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output'
-      ],
-    },
-  }),
+  runtime: lambda.Runtime.PYTHON_3_12,
+  handler: `lambda.main.handler`,
+  code: process.env.DEVELOPMENT_MODE ?
+    // When developing locally, we will build the package on-the-fly
+    lambda.Code.fromAsset(
+      path.join(__dirname, `../../${packageName}`),
+      {
+        bundling: {
+          image: lambda.Runtime.PYTHON_3_12.bundlingImage,
+          command: [
+            'bash', '-c', 'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output'
+          ],
+        },
+      }
+    ) :
+    // When deploying in a CI/CD pipeline, we will use the zip artifact
+    lambda.Code.fromAsset( path.join(__dirname, `../${packageName}.zip`) ),
   timeout: cdk.Duration.seconds(15),
   logRetention: logs.RetentionDays.THREE_DAYS,
   environment,
