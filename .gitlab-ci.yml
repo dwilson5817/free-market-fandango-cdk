@@ -1,5 +1,5 @@
 include:
-  - component: $CI_SERVER_FQDN/infrastructure/cdk-deployment-base/js-cdk-deploy@1.1.2
+  - component: $CI_SERVER_FQDN/infrastructure/cdk-deployment-base/js-cdk-deploy@1.1.3
     inputs:
       before_script:
         # https://gitlab.dylanw.dev/free-market-fandango/api
