@@ -27,15 +27,18 @@ export class FreeMarketFandangoCdkStack extends cdk.Stack {
     });
 
     const eventQueue = new EventQueueConstruct(this, 'EventQueue', {
+      artifactsBucket,
       dataTable,
     })
 
     new ApiConstruct(this, 'API', {
+      artifactsBucket,
       dataTable,
       eventQueue: eventQueue.sqsQueue
     })
 
     new CronConstruct(this, 'Cron', {
+      artifactsBucket,
       dataTable,
       eventQueue: eventQueue.sqsQueue
     });
