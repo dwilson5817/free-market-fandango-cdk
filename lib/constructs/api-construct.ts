@@ -34,7 +34,7 @@ export class ApiConstruct extends Construct {
     const api = new ApiGatewayToLambda(this, 'API', {
       lambdaFunctionProps: {
         runtime: lambda.Runtime.PYTHON_3_13,
-        handler: 'main.handler',
+        handler: 'free-market-fandango-api.main.handler',
         code: lambda.Code.fromBucket(
             props.artifactsBucket,
             'free-market-fandango-api/api_handler/function.zip',
