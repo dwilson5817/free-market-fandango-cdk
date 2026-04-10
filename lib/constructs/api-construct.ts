@@ -1,25 +1,26 @@
 import { Construct } from "constructs";
 import * as cdk from "aws-cdk-lib";
+import * as apigateway from "aws-cdk-lib/aws-apigateway";
+import * as logs from "aws-cdk-lib/aws-logs";
+import * as acm from "aws-cdk-lib/aws-certificatemanager";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as route53 from "aws-cdk-lib/aws-route53";
+import * as route53Targets from "aws-cdk-lib/aws-route53-targets";
 import * as s3 from "aws-cdk-lib/aws-s3";
 import * as ssm from "aws-cdk-lib/aws-ssm";
 import * as sqs from "aws-cdk-lib/aws-sqs";
 import { buildAllowedOrigins } from "../utils";
 import { ApiGatewayToLambda } from "@aws-solutions-constructs/aws-apigateway-lambda";
 import {
-    ADMIN_PASSWORD,
-    API_DOMAIN_NAME,
-    CERTIFICATE_ARN,
-    SPOTIPY_CLIENT_ID,
-    SPOTIPY_CLIENT_SECRET,
-    SPOTIPY_REDIRECT_URI
+  ADMIN_PASSWORD, DOMAIN_NAME,
+  SPOTIPY_CLIENT_ID,
+  SPOTIPY_CLIENT_SECRET,
+  SPOTIPY_REDIRECT_URI
 } from "../env";
-import * as apigateway from "aws-cdk-lib/aws-apigateway";
-import * as certificatemanager from "aws-cdk-lib/aws-certificatemanager";
-import * as logs from "aws-cdk-lib/aws-logs";
 
 type ApiConstructProps = {
+  hostedZone: route53.IHostedZone,
   artifactsBucket: s3.Bucket,
   dataTable: dynamodb.TableV2,
   eventQueue: sqs.Queue
@@ -29,7 +30,10 @@ export class ApiConstruct extends Construct {
   constructor(scope: Construct, id: string, props: ApiConstructProps) {
     super(scope, id);
 
-    const certificate = CERTIFICATE_ARN ? certificatemanager.Certificate.fromCertificateArn(this, 'Certificate', CERTIFICATE_ARN) : undefined;
+    const certificate = new acm.Certificate(this, 'ApiCertificate', {
+      domainName: `api.${props.hostedZone.zoneName}`,
+      validation: acm.CertificateValidation.fromDns(props.hostedZone),
+    });
 
     const api = new ApiGatewayToLambda(this, 'API', {
       lambdaFunctionProps: {
@@ -58,9 +62,9 @@ export class ApiConstruct extends Construct {
           allowOrigins: buildAllowedOrigins(),
           allowMethods: [ 'GET', 'PUT', 'POST', 'DELETE' ]
         },
-        ...API_DOMAIN_NAME && {
+        ...DOMAIN_NAME && {
           domainName: {
-            domainName: API_DOMAIN_NAME,
+            domainName: `api.${props.hostedZone.zoneName}`,
             certificate: certificate,
           },
         },
@@ -72,5 +76,13 @@ export class ApiConstruct extends Construct {
 
     props.dataTable.grantReadWriteData(api.lambdaFunction);
     props.eventQueue.grantSendMessages(api.lambdaFunction);
+
+    new route53.ARecord(this, 'ApiAliasRecord', {
+      zone: props.hostedZone,
+      recordName: 'api',
+      target: route53.RecordTarget.fromAlias(
+        new route53Targets.ApiGateway(api.apiGateway),
+      ),
+    });
   }
 }

@@ -1,4 +1,4 @@
-import { FRONTEND_DOMAIN_NAME } from './env';
+import { DOMAIN_NAME } from './env';
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as logs from "aws-cdk-lib/aws-logs";
 import * as cdk from "aws-cdk-lib";
@@ -7,7 +7,7 @@ import * as path from "node:path";
 export const buildAllowedOrigins = () => {
   const allowedOrigins = []
 
-  if (FRONTEND_DOMAIN_NAME) allowedOrigins.push(`https://${FRONTEND_DOMAIN_NAME}`)
+  if (DOMAIN_NAME) allowedOrigins.push(`https://${DOMAIN_NAME}`)
   allowedOrigins.push('http://localhost:5173')
 
   return allowedOrigins

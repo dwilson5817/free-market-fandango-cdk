@@ -5,10 +5,13 @@ import * as s3 from "aws-cdk-lib/aws-s3";
 import { CronConstruct } from "./constructs/cron-construct";
 import { ApiConstruct } from "./constructs/api-construct";
 import { EventQueueConstruct } from "./constructs/event-queue-construct";
+import { DnsConstruct } from "./constructs/dns-construct";
 
 export class FreeMarketFandangoCdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    const { hostedZone } = new DnsConstruct(this, 'Dns', {});
 
     const artifactsBucket = new s3.Bucket(this, 'ArtifactsBucket', {
       versioned: true,
@@ -32,6 +35,7 @@ export class FreeMarketFandangoCdkStack extends cdk.Stack {
     })
 
     new ApiConstruct(this, 'API', {
+      hostedZone,
       artifactsBucket,
       dataTable,
       eventQueue: eventQueue.sqsQueue
