@@ -1,10 +1,2 @@
 include:
-  - component: $CI_SERVER_FQDN/infrastructure/cdk-deployment-base/js-cdk-deploy@1.1.3
-    inputs:
-      before_script:
-        # https://gitlab.dylanw.dev/free-market-fandango/api
-        - curl --location --output free-market-fandango-api.zip https://gitlab.dylanw.dev/api/v4/projects/4/jobs/artifacts/main/raw/api.zip?job=build-zip
-        # https://gitlab.dylanw.dev/free-market-fandango/cron
-        - curl --location --output free-market-fandango-cron.zip https://gitlab.dylanw.dev/api/v4/projects/12/jobs/artifacts/main/raw/cron.zip?job=build-zip
-        # https://gitlab.dylanw.dev/free-market-fandango/queue-handler
-        - curl --location --output free-market-fandango-queue-handler.zip https://gitlab.dylanw.dev/api/v4/projects/13/jobs/artifacts/main/raw/queue-handler.zip?job=build-zip
+  - component: $CI_SERVER_FQDN/infrastructure/cdk-deployment-base/js-cdk-deploy@1.2.1
